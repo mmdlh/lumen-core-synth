@@ -19,6 +19,8 @@
  */
 
 @theme inline {
+  --font-sans: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -59,29 +61,33 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-energy-green: var(--energy-green);
+  --color-energy-amber: var(--energy-amber);
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --radius: 0.25rem;
+  --background: oklch(0.125 0.027 244);
+  --foreground: oklch(0.94 0.025 212);
+  --card: oklch(0.18 0.035 238 / 72%);
+  --card-foreground: oklch(0.94 0.025 212);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
+  --primary: oklch(0.78 0.15 211);
+  --primary-foreground: oklch(0.13 0.03 241);
   --secondary: oklch(0.968 0.007 247.896);
   --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
+  --muted: oklch(0.23 0.035 239);
+  --muted-foreground: oklch(0.68 0.045 235);
   --accent: oklch(0.968 0.007 247.896);
   --accent-foreground: oklch(0.208 0.042 265.755);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --border: oklch(0.55 0.12 218 / 28%);
+  --input: oklch(0.35 0.06 230 / 40%);
+  --ring: oklch(0.78 0.15 211);
+  --energy-green: oklch(0.88 0.18 156);
+  --energy-amber: oklch(0.81 0.17 75);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -142,3 +148,30 @@
     color: var(--color-foreground);
   }
 }
+
+body { margin: 0; overflow-x: hidden; }
+.energy-shell { position: relative; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px), radial-gradient(circle at 50% -10%, color-mix(in oklab, var(--primary) 16%, transparent), transparent 35%); background-size: 42px 42px, 42px 42px, auto; --grid-line: color-mix(in oklab, var(--primary) 5%, transparent); }
+.energy-shell::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.35; background-image:radial-gradient(circle, color-mix(in oklab,var(--primary) 55%,transparent) 1px,transparent 1px); background-size:73px 73px; mask-image:linear-gradient(to bottom,black,transparent 75%); }
+.nav-status { border-top: 1px solid color-mix(in oklab,var(--primary) 15%,transparent); background:linear-gradient(90deg,transparent,color-mix(in oklab,var(--primary) 6%,transparent),transparent); }
+.nav-button { display:flex; min-width:76px; flex-direction:column; align-items:center; gap:4px; border:1px solid transparent; padding:9px 10px; color:var(--muted-foreground); font-size:10px; transition:.25s ease; }
+.nav-button:hover,.nav-button-active { color:var(--primary); border-color:color-mix(in oklab,var(--primary) 35%,transparent); background:color-mix(in oklab,var(--primary) 8%,transparent); box-shadow:inset 0 -2px 0 var(--primary),0 0 18px color-mix(in oklab,var(--primary) 12%,transparent); }
+.mobile-nav-button { display:flex; min-width:0; flex-direction:column; align-items:center; gap:4px; overflow:hidden; border:1px solid var(--border); padding:8px 2px; color:var(--muted-foreground); font-size:8px; white-space:nowrap; }.mobile-nav-active { color:var(--primary); border-color:var(--primary); background:color-mix(in oklab,var(--primary) 8%,transparent); }
+.status-dot { display:inline-block; width:7px; height:7px; border-radius:50%; box-shadow:0 0 10px currentColor; animation:pulse-energy 1.8s infinite; }
+.tag { border:1px solid var(--border); background:var(--card); padding:5px 9px; color:var(--muted-foreground); font-size:10px; }
+.glass-panel,.kpi-card { position:relative; border:1px solid var(--border); background:linear-gradient(135deg,color-mix(in oklab,var(--card) 90%,transparent),color-mix(in oklab,var(--background) 70%,transparent)); backdrop-filter:blur(18px) saturate(130%); box-shadow:inset 0 1px color-mix(in oklab,var(--foreground) 5%,transparent),0 10px 30px color-mix(in oklab,var(--background) 55%,transparent); transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease; }
+.glass-panel::before,.kpi-card::before { content:""; position:absolute; pointer-events:none; inset:-1px; background:linear-gradient(110deg,var(--primary),transparent 22%,transparent 75%,var(--energy-green)); opacity:.3; z-index:-1; }
+.glass-panel:hover,.kpi-card:hover { transform:translateY(-2px); border-color:color-mix(in oklab,var(--primary) 50%,transparent); box-shadow:0 12px 35px color-mix(in oklab,var(--primary) 9%,transparent),inset 0 1px color-mix(in oklab,var(--foreground) 8%,transparent); }
+.panel-head { display:flex; height:50px; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); padding:0 14px; }
+.panel-head h3 { font-size:13px; font-weight:600; }.panel-code { display:block; margin-bottom:1px; color:var(--primary); font-family:var(--font-mono); font-size:8px; letter-spacing:.18em; }
+.kpi-card { overflow:hidden; padding:16px; }.kpi-card::after { content:""; position:absolute; right:-18px; bottom:-30px; width:85px; height:85px; border:1px solid currentColor; border-radius:50%; opacity:.08; }
+.kpi-icon { display:grid; height:38px; width:38px; place-items:center; border:1px solid currentColor; background:color-mix(in oklab,currentColor 8%,transparent); }.kpi-icon svg { width:19px; }
+.tone-cyan { color:var(--primary); }.tone-green { color:var(--energy-green); }.tone-amber { color:var(--energy-amber); }.tone-blue { color:var(--chart-1); }
+.device-cell { border:1px solid var(--border); background:color-mix(in oklab,var(--background) 45%,transparent); padding:11px; }
+.alert-row { display:flex; align-items:center; gap:8px; border-left:2px solid var(--border); background:color-mix(in oklab,var(--background) 55%,transparent); padding:9px; }.level { padding:2px 5px; font-size:9px; }.level-red{color:var(--destructive);background:color-mix(in oklab,var(--destructive) 12%,transparent)}.level-amber{color:var(--energy-amber);background:color-mix(in oklab,var(--energy-amber) 12%,transparent)}.level-blue{color:var(--primary);background:color-mix(in oklab,var(--primary) 12%,transparent)}
+.data-table { width:100%; min-width:820px; border-collapse:collapse; font-size:11px; }.data-table th { height:38px; background:color-mix(in oklab,var(--primary) 7%,transparent); padding:0 14px; color:var(--muted-foreground); text-align:left; font-weight:500; }.data-table td { height:43px; border-top:1px solid color-mix(in oklab,var(--border) 75%,transparent); padding:0 14px; }.data-table tr:hover td { background:color-mix(in oklab,var(--primary) 5%,transparent); }.data-table .last-state { color:var(--energy-green); }
+.status-card { border:1px solid var(--border); padding:14px; }.status-card svg { height:20px;width:20px }.status-green{color:var(--energy-green)}.status-amber{color:var(--energy-amber)}.status-red{color:var(--destructive)}.status-blue{color:var(--primary)}
+.ai-core { display:grid;height:46px;width:46px;place-items:center;border:1px solid var(--primary);color:var(--primary);box-shadow:0 0 20px color-mix(in oklab,var(--primary) 20%,transparent)}
+.control-select,.icon-control { height:30px;border:1px solid var(--border);background:var(--background);color:var(--foreground);font-size:10px }.control-select{appearance:none;padding:0 25px 0 26px}.icon-control{width:30px;display:grid;place-items:center}
+@keyframes pulse-energy { 50% { opacity:.45; box-shadow:0 0 16px currentColor; } }
+@media (max-width:1023px){ header>div:first-child{grid-template-columns:1fr}.energy-shell header h1{font-size:16px}.energy-shell main{padding-top:120px} }
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

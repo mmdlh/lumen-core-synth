@@ -64,6 +64,7 @@ function EnergyPlatform() {
       </div>
     </header>
     <div className="mx-auto max-w-[1920px] px-4 pb-5 pt-[126px] md:px-5">
+      <nav className="mb-4 grid grid-cols-6 gap-1 lg:hidden">{menu.map((item) => { const Icon = item.icon; return <button key={item.id} title={item.label} onClick={() => setPage(item.id)} className={`mobile-nav-button ${page === item.id ? "mobile-nav-active" : ""}`}><Icon className="h-4 w-4"/><span>{item.label}</span></button>; })}</nav>
       <div className="mb-4 flex items-end justify-between"><div><p className="mb-1 text-[10px] tracking-[.28em] text-primary">ENERGY CONTROL / {active.id.toUpperCase()}</p><h2 className="text-xl font-semibold">{active.label}</h2></div><div className="hidden items-center gap-2 md:flex"><span className="tag">实时数据</span><span className="tag">华东 · 一号园区</span></div></div>
       {page === "overview" && <Overview />}{page === "power" && <Power />}{page === "analysis" && <Analysis />}{page === "carbon" && <CarbonPage />}{page === "maintenance" && <Maintenance />}{page === "alarm" && <Alarm />}
     </div>

@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Activity, AlertTriangle, BarChart3, BatteryCharging, BellRing, Boxes,
-  Carbon, ChevronRight, CircleGauge, Clock3, Factory, Filter, Gauge,
-  LayoutDashboard, RadioTower, Search, Settings2, ShieldCheck, Wrench,
+  ChevronRight, CircleGauge, Clock3, Filter,
+  LayoutDashboard, Leaf, RadioTower, Search, ShieldCheck, Wrench,
   Zap,
 } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
@@ -30,14 +30,14 @@ const legend = { top: 8, right: 8, textStyle: { color: colors.text, fontSize: 10
 const hours = ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "24:00"];
 const days = ["09/15", "09/16", "09/17", "09/18", "09/19", "09/20", "09/21"];
 
-const lineOption = (series: EChartsOption["series"], x = hours): EChartsOption => ({
+const lineOption = (series: NonNullable<EChartsOption["series"]>, x = hours): EChartsOption => ({
   color: [colors.cyan, colors.green, colors.amber, colors.blue], tooltip, legend,
   grid: { left: 42, right: 18, top: 48, bottom: 28 }, xAxis: { type: "category", data: x, boundaryGap: false, ...axis }, yAxis: { type: "value", ...axis }, series,
 });
 
 const menu = [
   { id: "overview", label: "综合态势", icon: LayoutDashboard }, { id: "power", label: "电力监控", icon: Zap },
-  { id: "analysis", label: "能耗分析", icon: BarChart3 }, { id: "carbon", label: "碳排双控", icon: Carbon },
+  { id: "analysis", label: "能耗分析", icon: BarChart3 }, { id: "carbon", label: "碳排双控", icon: Leaf },
   { id: "maintenance", label: "设备运维", icon: Wrench }, { id: "alarm", label: "告警预警", icon: BellRing },
 ] as const;
 type PageId = typeof menu[number]["id"];
@@ -80,13 +80,13 @@ function Panel({ title, code, children, className = "", action }: { title: strin
 function Kpi({ label, value, unit, change, tone = "cyan", icon }: { label: string; value: string; unit: string; change: string; tone?: "cyan" | "green" | "amber" | "blue"; icon: ReactNode }) {
   return <div className={`kpi-card tone-${tone}`}><div className="flex items-start justify-between"><div><p className="text-xs text-muted-foreground">{label}</p><div className="mt-2"><strong className="font-mono text-2xl">{value}</strong><span className="ml-1 text-xs text-muted-foreground">{unit}</span></div></div><div className="kpi-icon">{icon}</div></div><div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2 text-[10px]"><span className="text-muted-foreground">较昨日同期</span><span className="text-energy-green">↗ {change}</span></div></div>;
 }
-const SmoothLine = ({ data, name, color, area = false }: { data: number[]; name: string; color: string; area?: boolean }) => ({ name, type: "line" as const, smooth: true, symbol: "none", data, lineStyle: { width: 2, color }, areaStyle: area ? { color, opacity: .1 } : undefined });
+const SmoothLine = ({ data, name, color, area = false }: { data: number[]; name: string; color: string; area?: boolean }) => ({ name, type: "line" as const, smooth: true, symbol: "none", data, lineStyle: { width: 2, color }, ...(area ? { areaStyle: { color, opacity: .1 } } : {}) });
 
 function Overview() {
   const load = useMemo(() => lineOption([SmoothLine({ name: "实时负荷", data: [3120, 2860, 3540, 4210, 3980, 3680, 3460], color: colors.cyan, area: true }), SmoothLine({ name: "预测负荷", data: [3200, 2950, 3460, 4080, 4120, 3760, 3540], color: colors.amber })]), []);
-  const flow: EChartsOption = { color: [colors.green, colors.cyan, colors.amber, colors.blue], grid: { left: 38, right: 12, top: 28, bottom: 26 }, xAxis: { type: "category", data: ["光伏", "储能", "市电", "燃气"], ...axis }, yAxis: { type: "value", ...axis }, series: [{ type: "bar", data: [2180, 950, 3260, 680], barWidth: 20, itemStyle: { borderRadius: [3,3,0,0], color: (p: { dataIndex: number }) => [colors.green, colors.cyan, colors.blue, colors.amber][p.dataIndex] } }] };
+  const flow: EChartsOption = { color: [colors.green, colors.cyan, colors.amber, colors.blue], grid: { left: 38, right: 12, top: 28, bottom: 26 }, xAxis: { type: "category", data: ["光伏", "储能", "市电", "燃气"], ...axis }, yAxis: { type: "value", ...axis }, series: [{ type: "bar", data: [2180, 950, 3260, 680], barWidth: 20, itemStyle: { borderRadius: [3,3,0,0], color: (p: { dataIndex: number }) => [colors.green, colors.cyan, colors.blue, colors.amber][p.dataIndex] ?? colors.cyan } }] };
   const radar: EChartsOption = { color: [colors.cyan, colors.amber], legend, radar: { center: ["50%","57%"], radius: "63%", indicator: ["电力","水","燃气","热力","可再生"].map(name => ({ name, max: 100 })), axisName: { color: colors.text }, splitLine: { lineStyle: { color: colors.grid } }, splitArea: { areaStyle: { color: ["transparent","rgba(30,216,245,.03)"] } } }, series: [{ type: "radar", data: [{ name: "今日", value: [82,66,48,71,90], areaStyle: { opacity: .16 } }, { name: "目标", value: [75,72,60,68,82] }] }] };
-  return <><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"><Kpi label="综合用能功率" value="4,286.7" unit="kW" change="3.6%" tone="cyan" icon={<Zap />} /><Kpi label="今日综合能耗" value="82.46" unit="MWh" change="2.1%" tone="green" icon={<BatteryCharging />} /><Kpi label="可再生能源占比" value="38.6" unit="%" change="5.2%" tone="blue" icon={<Activity />} /><Kpi label="今日碳排放" value="16.82" unit="tCO₂" change="-4.8%" tone="amber" icon={<Carbon />} /></div>
+  return <><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"><Kpi label="综合用能功率" value="4,286.7" unit="kW" change="3.6%" tone="cyan" icon={<Zap />} /><Kpi label="今日综合能耗" value="82.46" unit="MWh" change="2.1%" tone="green" icon={<BatteryCharging />} /><Kpi label="可再生能源占比" value="38.6" unit="%" change="5.2%" tone="blue" icon={<Activity />} /><Kpi label="今日碳排放" value="16.82" unit="tCO₂" change="-4.8%" tone="amber" icon={<Leaf />} /></div>
     <div className="mt-3 grid gap-3 xl:grid-cols-12"><Panel title="实时负荷趋势" code="01 / LOAD" className="xl:col-span-6"><EnergyChart option={load} className="h-[270px]" /></Panel><Panel title="多能供给构成" code="02 / FLOW" className="xl:col-span-3"><EnergyChart option={flow} className="h-[270px]" /></Panel><Panel title="综合能耗画像" code="03 / RADAR" className="xl:col-span-3"><EnergyChart option={radar} className="h-[270px]" /></Panel></div>
     <div className="mt-3 grid gap-3 xl:grid-cols-5"><Panel title="关键设备运行状态" code="04 / DEVICE" className="xl:col-span-3"><DeviceGrid /></Panel><Panel title="实时告警动态流" code="05 / ALERT" className="xl:col-span-2"><AlertFeed /></Panel></div></>;
 }
